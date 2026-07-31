@@ -2,107 +2,391 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario RD 2026</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; flex-wrap: wrap; justify-content: center; background: #f4f4f4; gap: 20px; padding: 20px; }
-        .mes { border: 1px solid #ccc; background: white; padding: 15px; width: 280px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; margin-top: 0; }
-        .dias { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
-        .cabecera { font-weight: bold; color: #666; padding-bottom: 5px; }
-        .dia { padding: 8px; border: 1px solid #fafafa; font-size: 0.9em; }
-        
-        /* Días Festivos y Cumpleaños en Rojo */
-        .festivo { background-color: #ff0000 !important; color: white !important; font-weight: bold; border-radius: 4px; }
-        .vacio { background: transparent; border: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .month-year {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 700;
+            color: #667eea;
+            padding: 12px 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .day.regular {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .day.regular:hover {
+            background: #e8e8e8;
+            transform: scale(1.05);
+        }
+
+        .day.today {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .day.holiday {
+            background: #ff6b6b;
+            color: white;
+            font-weight: 700;
+        }
+
+        .day.holiday:hover {
+            background: #ee5a52;
+            transform: scale(1.05);
+        }
+
+        .day.birthday {
+            background: #ffd93d;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .day.birthday:hover {
+            background: #ffcc00;
+            transform: scale(1.05);
+        }
+
+        .holiday-badge {
+            position: absolute;
+            bottom: 2px;
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-box.today {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .legend-box.holiday {
+            background: #ff6b6b;
+        }
+
+        .legend-box.birthday {
+            background: #ffd93d;
+        }
+
+        .legend-box.regular {
+            background: #f5f5f5;
+            border: 1px solid #ccc;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+            }
+
+            .month-year {
+                font-size: 20px;
+            }
+
+            .day {
+                font-size: 12px;
+            }
+
+            .day-header {
+                font-size: 12px;
+                padding: 8px 4px;
+            }
+
+            .legend {
+                gap: 10px;
+            }
+
+            .legend-item {
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Calendario RD 2026</h1>
+            <div class="nav-buttons">
+                <button id="prevBtn">← Anterior</button>
+                <button id="todayBtn">Hoy</button>
+                <button id="nextBtn">Siguiente →</button>
+            </div>
+        </div>
 
-<div class="mes">
-    <h2>Enero 2026</h2>
-    <div class="dias">
-        <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-        <div class="vacio"></div><div class="vacio"></div><div class="vacio"></div>
-        <div class="dia festivo" title="Año Nuevo">1</div><div class="dia">2</div><div class="dia">3</div><div class="dia">4</div>
-        <div class="dia festivo" title="Santos Reyes">5</div><div class="dia">6</div><div class="dia">7</div><div class="dia">8</div><div class="dia">9</div><div class="dia">10</div><div class="dia">11</div>
-        <div class="dia">12</div><div class="dia">13</div><div class="dia">14</div><div class="dia">15</div><div class="dia">16</div><div class="dia">17</div><div class="dia">18</div>
-        <div class="dia">19</div><div class="dia">20</div><div class="dia festivo" title="Altagracia">21</div><div class="dia">22</div><div class="dia">23</div><div class="dia">24</div><div class="dia">25</div>
-        <div class="dia festivo" title="Duarte">26</div><div class="dia">27</div><div class="dia">28</div><div class="dia">29</div><div class="dia">30</div><div class="dia">31</div>
+        <div class="month-year" id="monthYear"></div>
+
+        <div class="calendar-grid" id="calendarGrid"></div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box today"></div>
+                <span>Hoy</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box holiday"></div>
+                <span>Día Festivo</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box birthday"></div>
+                <span>Cumpleaños</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box regular"></div>
+                <span>Día Regular</span>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="mes">
-    <h2>Febrero 2026</h2>
-    <div class="dias">
-        <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-        <div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="dia">1</div>
-        <div class="dia">2</div><div class="dia">3</div><div class="dia">4</div><div class="dia">5</div><div class="dia">6</div><div class="dia">7</div><div class="dia">8</div>
-        <div class="dia">9</div><div class="dia">10</div><div class="dia">11</div><div class="dia">12</div><div class="dia">13</div><div class="dia">14</div><div class="dia">15</div>
-        <div class="dia">16</div><div class="dia">17</div><div class="dia">18</div><div class="dia">19</div><div class="dia">20</div><div class="dia">21</div><div class="dia">22</div>
-        <div class="dia">23</div><div class="dia">24</div><div class="dia">25</div><div class="dia">26</div><div class="dia festivo" title="Independencia">27</div><div class="dia">28</div>
-    </div>
-</div>
+    <script>
+        // Días festivos de República Dominicana 2026
+        const holidays = {
+            '2026-01-01': 'Año Nuevo',
+            '2026-01-06': 'Reyes Magos',
+            '2026-01-21': 'Nuestra Señora de Altagracia',
+            '2026-01-26': 'Natalicio de Juan Pablo Duarte',
+            '2026-02-27': 'Independencia Nacional',
+            '2026-04-03': 'Viernes Santo',
+            '2026-05-01': 'Día del Trabajo',
+            '2026-06-04': 'Corpus Christi',
+            '2026-08-16': 'Restauración Nacional',
+            '2026-09-24': 'Nuestra Señora de la Merced',
+            '2026-11-06': 'Día del Descubridor Colón',
+            '2026-12-25': 'Navidad'
+        };
 
-<div class="mes">
-    <h2>Marzo 2026</h2>
-    <div class="dias">
-        <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-        <div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="dia">1</div>
-        <div class="dia">2</div><div class="dia">3</div><div class="dia">4</div><div class="dia">5</div><div class="dia">6</div><div class="dia">7</div><div class="dia">8</div>
-        <div class="dia">9</div><div class="dia">10</div><div class="dia">11</div><div class="dia">12</div><div class="dia">13</div><div class="dia">14</div><div class="dia">15</div>
-        <div class="dia">16</div><div class="dia">17</div><div class="dia">18</div><div class="dia">19</div><div class="dia">20</div><div class="dia">21</div><div class="dia">22</div>
-        <div class="dia">23</div><div class="dia">24</div><div class="dia">25</div><div class="dia">26</div><div class="dia">27</div><div class="dia">28</div><div class="dia">29</div>
-        <div class="dia">30</div><div class="dia">31</div>
-    </div>
-</div>
+        // Tu cumpleaños
+        const birthdays = {
+            '2026-06-14': 'Tu cumpleaños'
+        };
 
-<div class="mes">
-    <h2>Abril 2026</h2>
-    <div class="dias">
-        <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-        <div class="vacio"></div><div class="vacio"></div><div class="dia">1</div><div class="dia">2</div><div class="dia festivo" title="Viernes Santo">3</div><div class="dia">4</div><div class="dia">5</div>
-        <div class="dia">6</div><div class="dia">7</div><div class="dia">8</div><div class="dia">9</div><div class="dia">10</div><div class="dia">11</div><div class="dia">12</div>
-        <div class="dia">13</div><div class="dia">14</div><div class="dia">15</div><div class="dia">16</div><div class="dia">17</div><div class="dia">18</div><div class="dia">19</div>
-        <div class="dia">20</div><div class="dia">21</div><div class="dia">22</div><div class="dia">23</div><div class="dia">24</div><div class="dia">25</div><div class="dia">26</div>
-        <div class="dia">27</div><div class="dia">28</div><div class="dia">29</div><div class="dia">30</div>
-    </div>
-</div>
+        let currentDate = new Date();
 
-<div class="mes">
-    <h2>Mayo 2026</h2>
-    <div class="dias">
-        <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-        <div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="vacio"></div><div class="dia">1</div><div class="dia">2</div><div class="dia">3</div>
-        <div class="dia festivo" title="Día del Trabajo">4</div><div class="dia">5</div><div class="dia">6</div><div class="dia">7</div><div class="dia">8</div><div class="dia">9</div><div class="dia">10</div>
-        <div class="dia">11</div><div class="dia">12</div><div class="dia">13</div><div class="dia">14</div><div class="dia">15</div><div class="dia">16</div><div class="dia">17</div>
-        <div class="dia">18</div><div class="dia">19</div><div class="dia">20</div><div class="dia">21</div><div class="dia">22</div><div class="dia">23</div><div class="dia">24</div>
-        <div class="dia">25</div><div class="dia">26</div><div class="dia">27</div><div class="dia">28</div><div class="dia">29</div><div class="dia">30</div><div class="dia">31</div>
-    </div>
-</div>
+        const daysOfWeek = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+        const monthNames = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
 
-<div class="mes">
-    <h2>Junio 2026</h2>
-    <div class="dias">
-        <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-        <div class="dia">1</div><div class="dia">2</div><div class="dia">3</div><div class="dia festivo" title="Corpus Christi">4</div><div class="dia">5</div><div class="dia">6</div><div class="dia">7</div>
-        <div class="dia">8</div><div class="dia">9</div><div class="dia">10</div><div class="dia">11</div><div class="dia">12</div><div class="dia">13</div><div class="dia festivo" title="Mi Cumpleaños">14</div>
-        <div class="dia">15</div><div class="dia">16</div><div class="dia">17</div><div class="dia">18</div><div class="dia">19</div><div class="dia">20</div><div class="dia">21</div>
-        <div class="dia">22</div><div class="dia">23</div><div class="dia">24</div><div class="dia">25</div><div class="dia">26</div><div class="dia">27</div><div class="dia">28</div>
-        <div class="dia">29</div><div class="dia">30</div>
-    </div>
-</div>
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
 
-<div class="mes">
-    <h2>Julio 2026</h2>
-    <div class="dias">
-         <div class="cabecera">L</div><div class="cabecera">M</div><div class="cabecera">M</div><div class="cabecera">J</div><div class="cabecera">V</div><div class="cabecera">S</div><div class="cabecera">D</div>
-         <div class="dia">1</div><div class="dia">2</div><div class="dia">3</div><div class="dia">4</div><div class="dia">5</div><div class="dia">6</div><div class="dia">7</div>
-        <div class="dia">8</div><div class="dia">9</div><div class="dia">10</div><div class="dia">11</div><div class="dia">12</div><div class="dia">13</div><div class="dia">14</div>
-        <div class="dia">15</div><div class="dia">16</div><div class="dia">17</div><div class="dia">18</div><div class="dia">19</div><div class="dia">20</div><div class="dia">21</div>
-        <div class="dia">22</div><div class="dia">23</div><div class="dia">24</div><div class="dia">25</div><div class="dia festivo" title="Dia del padre">26</div><div class="dia">27</div><div class="dia">28</div>
-        <div class="dia">29</div>                                                                       <div class="dia">30</div>                                                                                          <div class="dia">31</div>
-    </div>
-</div>
+            // Actualizar título
+            document.getElementById('monthYear').textContent = 
+                `${monthNames[month]} ${year}`;
 
+            // Primer día del mes y cantidad de días
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Ajustar firstDay: JS usa 0=domingo, nosotros usamos lunes=0
+            const adjustedFirstDay = (firstDay === 0) ? 6 : firstDay - 1;
+
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+
+            // Encabezados de días
+            daysOfWeek.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            // Días vacíos al inicio
+            for (let i = 0; i < adjustedFirstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day empty';
+                grid.appendChild(emptyDay);
+            }
+
+            // Días del mes
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = day;
+
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                // Verificar si es hoy
+                const isToday = 
+                    day === today.getDate() &&
+                    month === today.getMonth() &&
+                    year === today.getFullYear();
+
+                // Verificar si es día festivo o cumpleaños
+                const isHoliday = holidays[dateStr];
+                const isBirthday = birthdays[dateStr];
+
+                if (isToday) {
+                    dayElement.classList.add('today');
+                    dayElement.title = 'Hoy';
+                } else if (isBirthday) {
+                    dayElement.classList.add('birthday');
+                    dayElement.title = isBirthday;
+                } else if (isHoliday) {
+                    dayElement.classList.add('holiday');
+                    dayElement.title = isHoliday;
+                } else {
+                    dayElement.classList.add('regular');
+                }
+
+                grid.appendChild(dayElement);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        document.getElementById('todayBtn').addEventListener('click', () => {
+            currentDate = new Date();
+            renderCalendar();
+        });
+
+        // Render inicial
+        renderCalendar();
+    </script>
 </body>
 </html>
